@@ -9,6 +9,9 @@
     .navbar-inner {
         width: 100%;
     }
+    .logout-button{
+        display: none;
+    }
 }
 
 @media (max-width: 640px) {
@@ -27,5 +30,8 @@
     .header {
         border: none;
         background: transparent;
+    }
+    .logout-button{
+        display: none;
     }
 }

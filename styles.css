@@ -85,6 +85,10 @@
     justify-content: flex-end;
 }
 
+.logout-button {
+    background-color: #ffffff;
+}
+
 .margin-left {
     margin-left: 22px;
 }
