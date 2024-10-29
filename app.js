@@ -3,6 +3,9 @@ class App {
         this.$firebaseAuthContainer = document.querySelector("#firebaseui-auth-container");
         this.$mainContainer = document.querySelector(".main-container")
         this.$logoutButton = document.querySelector(".logout-button")
+        this.$uploadButton = document.querySelector(".upload-button")
+        this.$uploadPage = document.querySelector(".post-up-page")
+        this.$discardButton = document.querySelector(".discard-btn")
 
 
 
@@ -36,15 +39,27 @@ class App {
         });
       }
 
+      handleUpload() {
+        this.$mainContainer.style.display = "none"
+        this.$uploadPage.style.display = "block" 
+      }
+
+      handleDiscard() {
+        this.$mainContainer.style.display =  "block" 
+        this.$uploadPage.style.display = "none"
+      }
+
 
       redirectToApp(){
         this.$firebaseAuthContainer.style.display = "none"
         this.$mainContainer.style.display = "block"    
+        this.$uploadPage.style.display = "none"
       }
     
       redirectToAuth() {
         this.$firebaseAuthContainer.style.display = "block"
         this.$mainContainer.style.display = "none";
+        this.$uploadPage.style.display = "none"
     
         this.ui.start('#firebaseui-auth-container', {
           callbacks: {
@@ -77,14 +92,22 @@ class App {
       addEventlistenrs() {
         this.$logoutButton.addEventListener("click", (event) => {
             this.handelLogout();
+        });
+
+
+        this.$uploadButton.addEventListener("click", (event) => {
+          this.handleUpload()
+        });
+
+
+        this.$discardButton.addEventListener("click", (event) => {
+          this.handleDiscard()
         })
       }
     
 
 
-
 }
-
 
 
 

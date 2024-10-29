@@ -12,6 +12,7 @@
     height: 100vh;
     margin: 0;
     padding: 0;
+    display: none;
 }
 
 .navbar {
@@ -347,4 +348,8 @@ main {
 
 .body img {
     width: 100%;
+}
+
+.upload-button {
+    background-color:  #ffffff;
 }
