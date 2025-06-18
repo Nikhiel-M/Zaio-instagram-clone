@@ -12,9 +12,11 @@ class App {
         this.$uploadPage = document.querySelector("#upload-page");
         this.$uploadPage.style.display = "none";
         this.$discardButton = document.querySelector(".discard-btn")
+        this.$postContainer = document.querySelector(".posts")
 
         this.ui = new firebaseui.auth.AuthUI(firebase.auth());
         this.handleAuth();
+        this.addEventlistenrs();
 
         this.$authUser.addEventListener("click", (event) => {
             this.handleLogout();
@@ -66,6 +68,7 @@ class App {
                 storageRef.getDownloadURL().then((url) => {
                     console.log('File available at', url);
 
+                    const imgURL = url
                     const userId = firebase.auth().currentUser.uid;
 
                     const imageData = {
@@ -97,9 +100,9 @@ class App {
         this.firestore.collection('images').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 const post = doc.data();
-                // Populate dynamic content and caption divs
+
                 dynamicContentDiv.innerHTML += `<img src="${post.url}" alt="Dynamic Image" />`;
-                dynamicCaptionDiv.innerHTML += `<p><b>${post.displayName}</b> ${post.caption}</p>`;
+                dynamicCaptionDiv.innerHTML += `<p><b>${post.displayName}</b> ${post.caption}</p>`;                
             });
         }).catch((error) => {
             console.error("Error fetching posts:", error);
@@ -159,6 +162,49 @@ class App {
           this.handleDiscard()
         })
       }
+
+      displayPost() {
+        this.firestore.collection('images').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
+
+            querySnapshot.forEach((doc) => {
+                const post = doc.data();
+               
+                this.$postContainer.innerHTML += `
+                    <div class="header">
+                        <div class="profile-area">
+                            <div class="post-pic">
+                                <img class="_6q-tv" data-testid="user-avatar" draggable="false" src="${imgURL}" />
+                            </div>
+                            <span class="profile-name">${post.displayName}</span>
+                        </div>
+                        <div class="options">
+                            <svg aria-label="More options" class="_8-yf5" fill="#262626" height="16" viewBox="0 0 48 48" width="16">
+                                <circle cx="8" cy="24" r="4.5"></circle>
+                                <circle cx="24" cy="24" r="4.5"></circle>
+                                <circle cx="40" cy="24" r="4.5"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="body">
+                        <img alt="Post image" class="FFVAD" src="${post.url}" style="object-fit: cover" />
+                    </div>
+                    <div class="footer">
+                        <div class="like-comment-share">
+                            <svg aria-label="Like" class="_8-yf5" fill="#262626" height="24" width="24">
+                                <!-- SVG path -->
+                            </svg>
+                            <!-- Add more action buttons -->
+                        </div>
+                        <span class="caption"><b>${post.displayName}</b> ${post.caption}</span>
+                    </div>
+                `;
+            });
+        }).catch((error) => {
+            console.error("Error fetching posts:", error);
+        });
+    }
+    
+    
 }
 
 const InstagramApp = new App();
