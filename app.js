@@ -13,99 +13,50 @@ class App {
         this.$uploadPage.style.display = "none";
         this.$discardButton = document.querySelector(".discard-btn")
         this.$postContainer = document.querySelector(".posts")
-
         this.ui = new firebaseui.auth.AuthUI(firebase.auth());
         this.handleAuth();
-        this.addEventlistenrs();
+        this.addEventListeners();
 
         this.$authUser.addEventListener("click", (event) => {
+            event.preventDefault();
             this.handleLogout();
         });
 
         this.$uploadButton.addEventListener("click", (event) => {
             this.handleUpload();
-            this.saveToStorage();
-            this.readFromStorage();
         });
 
-     
+        this.$uploadFileButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            this.saveToStorage();
+        });
     }
 
     saveToStorage() {
-        this.$uploadFileButton.addEventListener("click", (event) => {
-            event.preventDefault(); // Prevent default form submission if within a form
-
-            const file = this.$fileInput.files[0]; // Get the first file input
-            if (!file) {
-                console.error("No file selected.");
-                return;
-            }
-
-            const captionValue = this.$caption.value; // Get current caption value
-            console.log("File:", file);
-            console.log("Caption:", captionValue);
-
-            const user = firebase.auth().currentUser;
-            if (!user) {
-                console.error("No user is signed in.");
-                return;
-            }
-
-            // Get user's display name
-            const displayName = user.displayName;
-
-            const storageRef = this.storage.ref('images/' + file.name);
-            const uploadTask = storageRef.put(file);
-
-            // Attach listener to monitor upload progress
-            uploadTask.on('state_changed', (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-            }, (error) => {
-                console.error("Error during upload:", error);
-            }, () => {
-                // Upload completed successfully, now we get the download URL
-                storageRef.getDownloadURL().then((url) => {
-                    console.log('File available at', url);
-
-                    const imgURL = url
-                    const userId = firebase.auth().currentUser.uid;
-
-                    const imageData = {
-                        userId: userId,
-                        displayName: displayName, // Include user's display name
-                        caption: captionValue,
-                        url: url,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-
-                    // Add imageData to Firestore
-                    return this.firestore.collection('images').add(imageData);
-                }).then(() => {
-                    console.log('Data stored successfully in Firestore');
-                    // Optionally, reset the input fields
-                    this.$fileInput.value = '';
-                    this.$caption.value = '';
-                }).catch((error) => {
-                    console.error('Error storing data:', error);
-                });
+        const file = this.$fileInput.files[0];
+        if (!file) return;
+        const captionValue = this.$caption.value;
+        const user = firebase.auth().currentUser;
+        if (!user) return;
+        const displayName = user.displayName;
+        const storageRef = this.storage.ref('images/' + file.name);
+        const uploadTask = storageRef.put(file);
+        uploadTask.on('state_changed', null, null, () => {
+            storageRef.getDownloadURL().then((url) => {
+                const imageData = {
+                    userId: user.uid,
+                    displayName: displayName,
+                    caption: captionValue,
+                    url: url,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                return this.firestore.collection('images').add(imageData);
+            }).then(() => {
+                this.$fileInput.value = '';
+                this.$caption.value = '';
+                this.handleDiscard();
+                this.displayPost(); // Refresh posts after upload
             });
-        });
-    }
-
-    readFromStorage() {
-        const dynamicContentDiv = document.querySelector("#dynamic-content");
-        const dynamicCaptionDiv = document.querySelector("#dynamic-caption");
-
-        this.firestore.collection('images').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const post = doc.data();
-
-                dynamicContentDiv.innerHTML += `<img src="${post.url}" alt="Dynamic Image" />`;
-                dynamicCaptionDiv.innerHTML += `<p><b>${post.displayName}</b> ${post.caption}</p>`;                
-            });
-        }).catch((error) => {
-            console.error("Error fetching posts:", error);
         });
     }
 
@@ -126,6 +77,7 @@ class App {
             if (user) {
                 this.$authUser.innerHTML = "Logout";
                 this.redirectToApp();
+                this.displayPost(); // Show posts after login
             } else {
                 this.redirectToAuth();
             }
@@ -157,45 +109,40 @@ class App {
         });
     }
 
-    addEventlistenrs() {
+    addEventListeners() {
         this.$discardButton.addEventListener("click", (event) => {
           this.handleDiscard()
         })
       }
 
       displayPost() {
+        this.$postContainer.innerHTML = ""; // Clear previous posts
         this.firestore.collection('images').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
-
             querySnapshot.forEach((doc) => {
                 const post = doc.data();
-               
                 this.$postContainer.innerHTML += `
-                    <div class="header">
-                        <div class="profile-area">
-                            <div class="post-pic">
-                                <img class="_6q-tv" data-testid="user-avatar" draggable="false" src="${imgURL}" />
+                    <div class="post">
+                        <div class="header">
+                            <div class="profile-area">
+                                <div class="post-pic">
+                                    <img class="_6q-tv" data-testid="user-avatar" draggable="false" src="${post.url}" />
+                                </div>
+                                <span class="profile-name">${post.displayName}</span>
                             </div>
-                            <span class="profile-name">${post.displayName}</span>
+                            <div class="options">
+                                <svg aria-label="More options" class="_8-yf5" fill="#262626" height="16" viewBox="0 0 48 48" width="16">
+                                    <circle cx="8" cy="24" r="4.5"></circle>
+                                    <circle cx="24" cy="24" r="4.5"></circle>
+                                    <circle cx="40" cy="24" r="4.5"></circle>
+                                </svg>
+                            </div>
                         </div>
-                        <div class="options">
-                            <svg aria-label="More options" class="_8-yf5" fill="#262626" height="16" viewBox="0 0 48 48" width="16">
-                                <circle cx="8" cy="24" r="4.5"></circle>
-                                <circle cx="24" cy="24" r="4.5"></circle>
-                                <circle cx="40" cy="24" r="4.5"></circle>
-                            </svg>
+                        <div class="body">
+                            <img alt="Post image" class="FFVAD" src="${post.url}" style="object-fit: cover" />
                         </div>
-                    </div>
-                    <div class="body">
-                        <img alt="Post image" class="FFVAD" src="${post.url}" style="object-fit: cover" />
-                    </div>
-                    <div class="footer">
-                        <div class="like-comment-share">
-                            <svg aria-label="Like" class="_8-yf5" fill="#262626" height="24" width="24">
-                                <!-- SVG path -->
-                            </svg>
-                            <!-- Add more action buttons -->
+                        <div class="footer">
+                            <span class="caption"><b>${post.displayName}</b> ${post.caption}</span>
                         </div>
-                        <span class="caption"><b>${post.displayName}</b> ${post.caption}</span>
                     </div>
                 `;
             });
