@@ -11,8 +11,12 @@ class App {
         this.$uploadButton = document.querySelector(".upload-button");
         this.$uploadPage = document.querySelector("#upload-page");
         this.$uploadPage.style.display = "none";
-        this.$discardButton = document.querySelector(".discard-btn")
-        this.$postContainer = document.querySelector(".posts")
+        this.$discardButton = document.querySelector(".discard-btn");
+        this.$postContainer = document.querySelector(".posts");
+        this.$options = document.querySelector('.options');
+        this.$optionsModal = document.querySelector('#options-modal');
+        this.$cancel = document.querySelector('.cancel')
+        this.$optionsModal.style.display = "none";
         this.ui = new firebaseui.auth.AuthUI(firebase.auth());
         this.handleAuth();
         this.addEventListeners();
@@ -30,12 +34,25 @@ class App {
             event.preventDefault();
             this.saveToStorage();
         });
+
+        this.$postContainer.addEventListener("click", (event) => {
+          if(event.target.closest('.options')) {
+            event.preventDefault();
+            this.$optionsModal.style.display = "block";
+          }
+        })
+
+        this.$cancel.addEventListener("click", (event) => {
+            event.preventDefault();
+            this.$optionsModal.style.display = "none";
+        })
+
     }
 
     saveToStorage() {
         const file = this.$fileInput.files[0];
         if (!file) return;
-        
+
         const captionValue = this.$caption.value;
         const user = firebase.auth().currentUser;
         if (!user) return;
@@ -115,6 +132,8 @@ class App {
           this.handleDiscard()
         })
       }
+
+      
 
       displayPost() {
         this.$postContainer.innerHTML = "";
