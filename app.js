@@ -35,6 +35,7 @@ class App {
     saveToStorage() {
         const file = this.$fileInput.files[0];
         if (!file) return;
+        
         const captionValue = this.$caption.value;
         const user = firebase.auth().currentUser;
         if (!user) return;
@@ -55,7 +56,7 @@ class App {
                 this.$fileInput.value = '';
                 this.$caption.value = '';
                 this.handleDiscard();
-                this.displayPost(); // Refresh posts after upload
+                this.displayPost(); 
             });
         });
     }
@@ -77,7 +78,7 @@ class App {
             if (user) {
                 this.$authUser.innerHTML = "Logout";
                 this.redirectToApp();
-                this.displayPost(); // Show posts after login
+                this.displayPost();
             } else {
                 this.redirectToAuth();
             }
@@ -116,7 +117,7 @@ class App {
       }
 
       displayPost() {
-        this.$postContainer.innerHTML = ""; // Clear previous posts
+        this.$postContainer.innerHTML = "";
         this.firestore.collection('images').orderBy('timestamp', 'desc').get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 const post = doc.data();
