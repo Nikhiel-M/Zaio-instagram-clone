@@ -74,7 +74,6 @@ class App {
       if (doc.exists) {
         const post = doc.data();
         this.$caption.value = post.caption;
-        // Show current image in edit form
         const img = document.querySelector("#current-edit-image");
         if (img) {
           img.src = post.url;
@@ -87,6 +86,27 @@ class App {
     });
   }
 });
+
+const deleteButton = this.$optionsModal.querySelectorAll("li")[1];
+deleteButton.addEventListener("click", (event) => {
+  if (deleteButton.textContent === "Delete") {
+    const postId = this.lastClickedPostId;
+    if (!postId) return;
+
+
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    this.firestore.collection("images").doc(postId).delete()
+      .then(() => {
+        this.$optionsModal.style.display = "none";
+        this.displayPost(); 
+      })
+      .catch((error) => {
+        alert("Failed to delete post: " + error.message);
+      });
+  }
+});
+
 
 }
 
@@ -202,7 +222,7 @@ saveToStorage() {
     this.$firebaseAuthContainer.style.display = "none";
     this.$app.style.display = "block";
   }
-  
+
   redirectToAuth() {
     this.$firebaseAuthContainer.style.display = "block";
     this.$app.style.display = "none";
