@@ -139,7 +139,6 @@ saveToStorage() {
         });
       });
     } else {
-        // update
       postRef.update({
         caption: captionValue,
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -152,7 +151,6 @@ saveToStorage() {
       });
     }
   } else {
-    // normal
     if (!file) return;
     const storageRef = this.storage.ref("images/" + file.name);
     const uploadTask = storageRef.put(file);
@@ -229,7 +227,6 @@ saveToStorage() {
 
     this.ui.start("#firebaseui-auth-container", {
       signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
-      // Other config options...
     });
   }
 
