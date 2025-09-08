@@ -18,8 +18,9 @@
     height: 54px;
     border-bottom: 1px solid var(--color-border);
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
+    
 }
 
 .navbar-inner {
@@ -44,6 +45,7 @@
 
 .logo {
     width: 360px;
+    position: relative;
 }
 
 .search-bar {
@@ -227,6 +229,12 @@ main {
     border: 1px solid var(--color-border);
     border-bottom: none;
 }
+.interact-btns{
+    display: flex;
+}
+.interact-btns span{
+    padding: 0 3px ;
+}
 
 .user-actions {
     display: flex;
@@ -241,6 +249,11 @@ main {
     font-size: 14px;
     margin-top: 5px;
 }
+
+.caption{
+    margin: 3px 0 3px 0.5rem;
+}
+
 .caption-username {
     font-size: 14px;
     font-weight: 400;
