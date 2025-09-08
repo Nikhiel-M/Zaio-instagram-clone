@@ -376,40 +376,57 @@ main {
     padding: 10px;
     background-color: white;
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
-    border-radius: 1.5%;
+    border-bottom-left-radius: 3rem;
+    border-bottom-right-radius: 3rem;
+    border-top-left-radius: 3rem;
+    border-top-right-radius: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    margin: 13% 0 0 4%;
+    margin: 11% 3% 5% 4%;
 }
 
 input{
+    
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 5px 20px 5px 20px;
-    margin-left: 130px;
+    margin-left: 15%;
     margin-bottom: 10px;
     cursor: pointer;
 }
 
 label{
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 50px;
+    
 }
 
 #upload-file{
+        width: 100%;
     margin-top: 90px;
 }
+
+.progress-bar {
+  height: 1.2rem;
+  border-radius: 7px;
+  background-color: #e62193;
+  margin-bottom: 0.5rem;
+  width: 0%; 
+  transition: width 0.5s ease;
+}
+
+
 
 /* button styling */
 
 #upload-button{
   cursor:  pointer;
-  margin-left: 130px;
+  margin-left: 20%;
   margin-bottom: 5%;
   padding: 10px;
   width: 25%;

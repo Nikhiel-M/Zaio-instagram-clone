@@ -18,6 +18,7 @@ class App {
     this.$cancel = document.querySelector(".cancel");
     this.$optionsModal.style.display = "none";
     this.$modalContent = document.querySelector("modal-content");
+    this.$progressBar = document.querySelector(".progress-bar")
     this.ui = new firebaseui.auth.AuthUI(firebase.auth());
     this.editingPostId = null;
     this.handleAuth();
@@ -115,46 +116,22 @@ saveToStorage() {
   const captionValue = this.$caption.value;
   const user = firebase.auth().currentUser;
   const displayName = user.displayName;
-  if (!user) return;
+  if (!user || !file) return;
 
-  if (this.editingPostId) {
-    const postRef = this.firestore.collection("images").doc(this.editingPostId);
-    if (file) {
-     
-      const storageRef = this.storage.ref("images/" + file.name);
-      const uploadTask = storageRef.put(file);
-      uploadTask.on("state_changed", null, null, () => {
-        storageRef.getDownloadURL().then((url) => {
-          postRef.update({
-            caption: captionValue,
-            url: url,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-          }).then(() => {
-            this.editingPostId = null;
-            this.$fileInput.value = "";
-            this.$caption.value = "";
-            this.handleDiscard();
-            this.displayPost();
-          });
-        });
-      });
-    } else {
-      postRef.update({
-        caption: captionValue,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      }).then(() => {
-        this.editingPostId = null;
-        this.$fileInput.value = "";
-        this.$caption.value = "";
-        this.handleDiscard();
-        this.displayPost();
-      });
-    }
-  } else {
-    if (!file) return;
-    const storageRef = this.storage.ref("images/" + file.name);
-    const uploadTask = storageRef.put(file);
-    uploadTask.on("state_changed", null, null, () => {
+  const storageRef = this.storage.ref("images/" + file.name);
+  const uploadTask = storageRef.put(file);
+
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+      this.$progressBar.style.width = progress + "%";
+    },
+    (error) => {
+    },
+    () => {
+      
       storageRef.getDownloadURL().then((url) => {
         const imageData = {
           userId: user.uid,
@@ -164,16 +141,24 @@ saveToStorage() {
           url: url,
           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         };
+
         this.firestore.collection("images").add(imageData).then(() => {
+
           this.$fileInput.value = "";
           this.$caption.value = "";
           this.handleDiscard();
           this.displayPost();
+
+          setTimeout(() => {
+            this.$progressBar.style.width = "0%";
+          }, 1000);
         });
       });
-    });
-  }
+    }
+  );
 }
+
+
 
   handleUpload() {
     this.$firebaseAuthContainer.style.display = "none";
