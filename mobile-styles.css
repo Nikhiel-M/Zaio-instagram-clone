@@ -55,11 +55,42 @@
     width: 70%;
     
 }
-
     #firebaseui-auth-container{
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 70%;
+}
+.navbar-inner > .logo {
+    display: none;
+}
+.navbar-icons-inner {
+    display: flex;
+    justify-content: space-between;
+    padding: 0;
+
+}
+
+.post-button{
+    margin: 0;
+}
+
+#create-caption{
+    width: 10rem;
+    margin-left: 3rem;
+}
+
+.btns-div{
+    display: flex;
+    flex-direction: row;
+}
+.discard-btn{
+ font-size: 0.8rem;
+ padding: 1rem 2.3rem;   
+}
+#upload-button{
+    padding: 1rem;
+    margin: 0 0 0 3rem;
+    font-size: 0.8rem;
 }
 }

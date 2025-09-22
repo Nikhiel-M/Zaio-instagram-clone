@@ -412,6 +412,7 @@ input{
 }
 
 label{
+    
     width: 100%;
     display: flex;
     justify-content: center;
@@ -605,3 +606,4 @@ li:hover {
     justify-content: center;
     margin-top: 15%;
 }
+
